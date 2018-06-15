@@ -3,6 +3,7 @@ package uk.gov.ons.registers.cdap.service;
 import co.cask.cdap.api.annotation.UseDataSet;
 import co.cask.cdap.api.dataset.table.Get;
 import co.cask.cdap.api.dataset.table.Row;
+import co.cask.cdap.api.dataset.table.Scanner;
 import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.api.service.AbstractService;
 import co.cask.cdap.api.service.http.AbstractHttpServiceHandler;
@@ -17,6 +18,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +26,7 @@ public class CHService extends AbstractService {
 
     public static final String SERVICE_NAME = "CHService";
     private static final String SERVICE_DESC = "Service that returns A JSON object of company data based on CompanyNumber";
+    private static final String POSTCODE_COLUMN = "regaddress_postcode";
 
     @Override
     protected void configure() {
@@ -39,6 +42,9 @@ public class CHService extends AbstractService {
     public static class CHdataHandler extends AbstractHttpServiceHandler {
         private static final Logger LOG = LoggerFactory.getLogger(CHdataHandler.class);
 
+        //Google GSON object for JSON object creation
+        private Gson gson = new Gson();
+
         @UseDataSet(Sic07.CH_DATASET_NAME)
         private Table chData;
 
@@ -46,9 +52,9 @@ public class CHService extends AbstractService {
          * Returns The Business Information as a JSON object from an entered Company Number
          */
         @GET
-        @Path("/CH/{number}")
-        public void getSic07(HttpServiceRequest request, HttpServiceResponder responder,
-                @PathParam("number") String number) {
+        @Path("/CH/number/{number}")
+        public void getBusinessByNumber(HttpServiceRequest request, HttpServiceResponder responder,
+                                        @PathParam("number") String number) {
 
             Row chRow = chData.get(new Get(number));
 
@@ -59,13 +65,58 @@ public class CHService extends AbstractService {
                 return;
             }
 
-            //Loads Results into byte[] hashMap object
-            Map<byte[], byte[]> chMapString = chRow.getColumns();
+            responder.sendJson(gson.toJsonTree(byteMapToStringJSON(chRow.getColumns())));
 
+        }
+
+        /**
+         * Returns The Business Information as a JSON objects Based on Post Code Area
+         */
+        @GET
+        @Path("/CH/postcodearea/{postcode}")
+        public void getBusinessByPostCodeArea(HttpServiceRequest request, HttpServiceResponder responder,
+                             @PathParam("postcode") String postcodeArea) {
+
+            ArrayList<JsonElement> jsonElementArrayList = new ArrayList<JsonElement>();
+
+            Row row;
+
+            // Scan all rows
+            try (Scanner scanner = chData.scan(null, null)) {
+                while ((row = scanner.next()) != null) {
+                    String postCode = row.getString(POSTCODE_COLUMN);
+
+                    if (postCode != null) {
+                        String scanPostCode[] = postCode.split(" ");
+
+                        if (scanPostCode[0].equals(postcodeArea)){
+                            jsonElementArrayList.add(byteMapToStringJSON(row.getColumns()));
+                        }
+                    }
+                }
+            }
+
+            //Error Handing of Null results
+            if (jsonElementArrayList.isEmpty()) {
+                LOG.debug("No records found for Business in PostCode Area: {}", postcodeArea);
+                responder.sendStatus(HttpURLConnection.HTTP_NOT_FOUND);
+                return;
+            }
+
+            responder.sendJson(gson.toJsonTree(jsonElementArrayList));
+
+        }
+
+        /**
+         * Method that takes byte[] HashMap from results and returns a decoded JSON object with the results
+         */
+        private JsonElement byteMapToStringJSON(Map<byte[], byte[]> hashMap){
+
+            //Loads Results into string Hashmap from byte[] hashMap object
             HashMap<String, String> chBusinessData = new HashMap<>();
 
             // Iterates thought results and casts the byte[] objects to Strings to a <String, String> HashMap
-            for (Map.Entry<byte[], byte[]> entry : chMapString.entrySet()) {
+            for (Map.Entry<byte[], byte[]> entry : hashMap.entrySet()) {
                 String keyString = new String(entry.getKey());
                 String valueString = new String(entry.getValue());
 
@@ -73,11 +124,13 @@ public class CHService extends AbstractService {
             }
 
             // Creating JSON Object from HashMap
-            Gson gson = new Gson();
-            JsonElement json = gson.toJsonTree(chBusinessData);
 
-            responder.sendJson(json);
-
+            return gson.toJsonTree(chBusinessData);
         }
+
+
     }
+
+
+
 }

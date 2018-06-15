@@ -70,7 +70,7 @@ public class CHServiceTest extends TestBase {
 
     @Test
     public void testFound() throws Exception {
-        URL url = new URL(serviceManager.getServiceURL(), "CH/11240759");
+        URL url = new URL(serviceManager.getServiceURL(), "CH/number/11240759");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         Assert.assertEquals(HttpURLConnection.HTTP_OK, connection.getResponseCode());
         String response;
