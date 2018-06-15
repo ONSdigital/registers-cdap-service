@@ -10,7 +10,6 @@ import org.junit.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-
 /**
  * Test for {@link Sic07Service}.
  */

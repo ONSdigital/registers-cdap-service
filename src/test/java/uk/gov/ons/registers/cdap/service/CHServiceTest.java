@@ -19,32 +19,27 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 
-
 /**
  * Test for {@link CHService}.
  */
 public class CHServiceTest extends TestBase {
 
     private static final String TEST_CH_NUMBER = "11240759";
-    private static final String TEST_CH_NAME_COLUMN = "CompanyName";
+    private static final String TEST_CH_NAME_COLUMN = "companyname";
     private static final String TEST_CH_NAME = "ANIMAL MICROCHIPS LTD";
     private JsonElement TEST_JSON;
 
-
-
     private ServiceManager serviceManager;
-
 
     @Before
     public void setUp() throws Exception {
         super.beforeTest();
 
-        //SetUp JSON Object
+        // SetUp JSON Object
         HashMap<String, String> testMap = new HashMap<>();
         testMap.put(TEST_CH_NAME_COLUMN, TEST_CH_NAME);
         Gson gson = new Gson();
         TEST_JSON = gson.toJsonTree(testMap);
-
 
         // Deploy the Sic07 application
         ApplicationManager appManager = deployApplication(Sic07.class);
@@ -67,7 +62,6 @@ public class CHServiceTest extends TestBase {
         // Wait service startup
         serviceManager.waitForStatus(true);
     }
-
 
     @After
     public void tearDown() throws Exception {
@@ -96,4 +90,3 @@ public class CHServiceTest extends TestBase {
         Assert.assertEquals(HttpURLConnection.HTTP_NOT_FOUND, connection.getResponseCode());
     }
 }
-
