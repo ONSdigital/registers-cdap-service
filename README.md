@@ -2,7 +2,9 @@
 
 Currently contains Two services:
  - Sic07Service retrieving SIC descriptions for codes
- - CHService returns a JSON object of company data based on CompanyNumber 
+ - CHService
+    - Returns a JSON object of company data based on CompanyNumber 
+    - Returns JSON objects of company data based on Post Code area
  
 
 ## Prerequsites
@@ -44,7 +46,14 @@ SIC Service
 ```
 curl -v localhost:11015/v3/namespaces/default/apps/sic07_lookup/services/Sic07Service/methods/sic07/{code}
 ```
-Company House Service
+##### Company House Service
+
+Find company based on Business Number
 ```
-curl -v localhost:11015/v3/namespaces/default/apps/sic07_lookup/services/CHService/methods/CH/{number}
+curl -v localhost:11015/v3/namespaces/default/apps/sic07_lookup/services/CHService/methods/CH/number/{number}
+```
+
+Find companies based on Post Code Area
+```
+curl -v localhost:11015/v3/namespaces/default/apps/sic07_lookup/services/CHService/methods/CH/postcodearea/{postcodearea}
 ```
