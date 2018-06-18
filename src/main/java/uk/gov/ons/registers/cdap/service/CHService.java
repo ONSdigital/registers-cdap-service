@@ -70,7 +70,7 @@ public class CHService extends AbstractService {
         }
 
         /**
-         * Returns The Business Information as a JSON objects Based on Post Code Area
+         * Returns The Businesses Information as a JSON objects Based on Post Code Area
          */
         @GET
         @Path("/CH/postcodearea/{postcode}")
@@ -98,7 +98,7 @@ public class CHService extends AbstractService {
 
             //Error Handing of Null results
             if (jsonElementArrayList.isEmpty()) {
-                LOG.debug("No records found for Business in PostCode Area: {}", postcodeArea);
+                LOG.debug("No records found for Businesses in PostCode Area: {}", postcodeArea);
                 responder.sendStatus(HttpURLConnection.HTTP_NOT_FOUND);
                 return;
             }

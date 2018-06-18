@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -25,9 +26,13 @@ import java.util.HashMap;
 public class CHServiceTest extends TestBase {
 
     private static final String TEST_CH_NUMBER = "11240759";
+
     private static final String TEST_CH_NAME_COLUMN = "companyname";
     private static final String TEST_CH_NAME = "ANIMAL MICROCHIPS LTD";
+    private static final String TEST_CH_POSTCODE_COLUMN = "regaddress_postcode";
+    private static final String TEST_CH_POSTCODE = "TA4 3NA";
     private JsonElement TEST_JSON;
+    private ArrayList<JsonElement> TEST_JSON_ARRAYLIST;
 
     private ServiceManager serviceManager;
 
@@ -38,8 +43,13 @@ public class CHServiceTest extends TestBase {
         // SetUp JSON Object
         HashMap<String, String> testMap = new HashMap<>();
         testMap.put(TEST_CH_NAME_COLUMN, TEST_CH_NAME);
+        testMap.put(TEST_CH_POSTCODE_COLUMN, TEST_CH_POSTCODE);
         Gson gson = new Gson();
         TEST_JSON = gson.toJsonTree(testMap);
+
+        // Add JSON To ArrayList for PostCode Results
+        TEST_JSON_ARRAYLIST = new ArrayList<>();
+        TEST_JSON_ARRAYLIST.add(TEST_JSON);
 
         // Deploy the Sic07 application
         ApplicationManager appManager = deployApplication(Sic07.class);
@@ -48,9 +58,10 @@ public class CHServiceTest extends TestBase {
         DataSetManager<Table> datasetManager = getDataset(Sic07.CH_DATASET_NAME);
         Table sicCodes = datasetManager.get();
 
-        // Add a Business Number and name
+        // Add a Business Number, name and PostCode
         Put put = new Put(TEST_CH_NUMBER);
         put.add(TEST_CH_NAME_COLUMN, TEST_CH_NAME);
+        put.add(TEST_CH_POSTCODE_COLUMN, TEST_CH_POSTCODE);
         sicCodes.put(put);
 
         // Commit our new row to the dataset
@@ -69,7 +80,7 @@ public class CHServiceTest extends TestBase {
     }
 
     @Test
-    public void testFound() throws Exception {
+    public void testChNumberFound() throws Exception {
         URL url = new URL(serviceManager.getServiceURL(), "CH/number/11240759");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         Assert.assertEquals(HttpURLConnection.HTTP_OK, connection.getResponseCode());
@@ -84,8 +95,31 @@ public class CHServiceTest extends TestBase {
     }
 
     @Test
-    public void testNotFound() throws Exception {
-        URL url = new URL(serviceManager.getServiceURL(), "CH/000000");
+    public void testChNumberNotFound() throws Exception {
+        URL url = new URL(serviceManager.getServiceURL(), "CH/number/000000");
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        Assert.assertEquals(HttpURLConnection.HTTP_NOT_FOUND, connection.getResponseCode());
+    }
+
+
+    @Test
+    public void testChPostcodeFound() throws Exception {
+        URL url = new URL(serviceManager.getServiceURL(), "CH/postcodearea/TA4");
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        Assert.assertEquals(HttpURLConnection.HTTP_OK, connection.getResponseCode());
+        String response;
+        try {
+
+            response = new String(ByteStreams.toByteArray(connection.getInputStream()), Charsets.UTF_8);
+        } finally {
+            connection.disconnect();
+        }
+        Assert.assertEquals(TEST_JSON_ARRAYLIST.toString(), response);
+    }
+
+    @Test
+    public void testChPostcodeNotFound() throws Exception {
+        URL url = new URL(serviceManager.getServiceURL(), "CH/postcodearea/NP20");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         Assert.assertEquals(HttpURLConnection.HTTP_NOT_FOUND, connection.getResponseCode());
     }
