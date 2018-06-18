@@ -79,6 +79,11 @@ public class CHServiceTest extends TestBase {
         super.afterTest();
     }
 
+    /**
+     * Business Number Search Test
+     * Returns The Business Information as a JSON object from an entered Company Number
+     */
+
     @Test
     public void testChNumberFound() throws Exception {
         URL url = new URL(serviceManager.getServiceURL(), "CH/number/11240759");
@@ -101,6 +106,10 @@ public class CHServiceTest extends TestBase {
         Assert.assertEquals(HttpURLConnection.HTTP_NOT_FOUND, connection.getResponseCode());
     }
 
+    /**
+     * Postcode Area Search Test
+     * Returns The Businesses Information as a JSON objects Based on Post Code Area
+     */
 
     @Test
     public void testChPostcodeFound() throws Exception {

@@ -65,7 +65,7 @@ public class CHService extends AbstractService {
                 return;
             }
 
-            responder.sendJson(gson.toJsonTree(byteMapToStringJSON(chRow.getColumns())));
+            responder.sendJson(gson.toJsonTree(byteMapToJSON(chRow.getColumns())));
 
         }
 
@@ -77,7 +77,7 @@ public class CHService extends AbstractService {
         public void getBusinessByPostCodeArea(HttpServiceRequest request, HttpServiceResponder responder,
                              @PathParam("postcode") String postcodeArea) {
 
-            ArrayList<JsonElement> jsonElementArrayList = new ArrayList<JsonElement>();
+            ArrayList<JsonElement> jsonElementArrayList = new ArrayList<>();
 
             Row row;
 
@@ -90,7 +90,7 @@ public class CHService extends AbstractService {
                         String scanPostCode[] = postCode.split(" ");
 
                         if (scanPostCode[0].equals(postcodeArea)){
-                            jsonElementArrayList.add(byteMapToStringJSON(row.getColumns()));
+                            jsonElementArrayList.add(byteMapToJSON(row.getColumns()));
                         }
                     }
                 }
@@ -110,7 +110,7 @@ public class CHService extends AbstractService {
         /**
          * Method that takes byte[] HashMap from results and returns a decoded JSON object with the results
          */
-        private JsonElement byteMapToStringJSON(Map<byte[], byte[]> hashMap){
+        private JsonElement byteMapToJSON(Map<byte[], byte[]> hashMap){
 
             //Loads Results into string Hashmap from byte[] hashMap object
             HashMap<String, String> chBusinessData = new HashMap<>();
