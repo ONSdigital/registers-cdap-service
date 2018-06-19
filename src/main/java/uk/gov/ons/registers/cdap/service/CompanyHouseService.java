@@ -17,14 +17,18 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
+import java.io.UnsupportedEncodingException;
+import java.lang.invoke.MethodHandles;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class CHService extends AbstractService {
+public class CompanyHouseService extends AbstractService {
 
-    static final String SERVICE_NAME = "CHService";
+    static final String SERVICE_NAME = "CompanyHouseService";
     private static final String SERVICE_DESC = "Service that returns A JSON object of company data based on CompanyNumber";
     private static final String POSTCODE_COLUMN = "regaddress_postcode";
 
@@ -40,7 +44,7 @@ public class CHService extends AbstractService {
      * { @number CHdata} Dataset.
      */
     public static class CHdataHandler extends AbstractHttpServiceHandler {
-        private static final Logger LOG = LoggerFactory.getLogger(CHdataHandler.class);
+        private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
         private Gson gson = new Gson();
 
@@ -51,9 +55,9 @@ public class CHService extends AbstractService {
          * Returns The Business Information as a JSON object from an entered Company Number
          */
         @GET
-        @Path("/CH/number/{number}")
+        @Path("/CH/bussinesnumber/{bussinesnumber}")
         public void getBusinessByNumber(HttpServiceRequest request, HttpServiceResponder responder,
-                                        @PathParam("number") String number) {
+                                        @PathParam("bussinesnumber") String number) {
 
             Row chRow = chData.get(new Get(number));
 
@@ -76,7 +80,7 @@ public class CHService extends AbstractService {
         public void getBusinessByPostCodeArea(HttpServiceRequest request, HttpServiceResponder responder,
                              @PathParam("postcode") String postcodeArea) {
 
-            ArrayList<JsonElement> jsonElementArrayList = new ArrayList<>();
+            List<JsonElement> jsonElementArrayList = new ArrayList<>();
             Row row;
 
             try (Scanner scanner = chData.scan(null, null)) {
@@ -96,7 +100,8 @@ public class CHService extends AbstractService {
             //Error Handing of empty results
             if (jsonElementArrayList.isEmpty()) {
                 LOG.debug("No records found for Businesses in PostCode Area: {}", postcodeArea);
-                responder.sendStatus(HttpURLConnection.HTTP_NOT_FOUND);
+                responder.sendStatus(Response.Status.NOT_FOUND.getStatusCode());
+                //responder.sendStatus(HttpURLConnection.HTTP_NOT_FOUND);
                 return;
             }
 
@@ -109,12 +114,20 @@ public class CHService extends AbstractService {
          */
         private JsonElement byteMapToJSON(Map<byte[], byte[]> hashMap){
 
-            HashMap<String, String> chBusinessData = new HashMap<>();
+            Map<String, String> chBusinessData = new HashMap<>();
 
             // Iterates thought results and casts the byte[] objects to Strings to a <String, String> HashMap
             for (Map.Entry<byte[], byte[]> entry : hashMap.entrySet()) {
-                String keyString = new String(entry.getKey());
-                String valueString = new String(entry.getValue());
+                String keyString = null;
+                String valueString = null;
+
+                try {
+                    keyString = new String(entry.getKey(), "UTF-8");
+                    valueString = new String(entry.getValue(), "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+
 
                 chBusinessData.put(keyString, valueString);
             }

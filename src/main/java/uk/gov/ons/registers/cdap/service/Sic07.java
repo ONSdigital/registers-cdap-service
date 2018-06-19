@@ -21,7 +21,7 @@ public class Sic07 extends AbstractApplication {
     createDataset(DATASET_NAME, Table.class);
     createDataset(CH_DATASET_NAME, Table.class);
     addService(new Sic07Service());
-    addService(new CHService());
+    addService(new CompanyHouseService());
   }
 
 }
