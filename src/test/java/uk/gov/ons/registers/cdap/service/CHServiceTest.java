@@ -10,6 +10,8 @@ import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,6 +21,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.is;
 
 /**
  * Test for {@link CHService}.
@@ -86,7 +91,10 @@ public class CHServiceTest extends TestBase {
     public void testChNumberFound() throws Exception {
         URL url = new URL(serviceManager.getServiceURL(), "CH/number/11240759");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
         Assert.assertEquals(HttpURLConnection.HTTP_OK, connection.getResponseCode());
+        assertThat(connection.getResponseCode(), is(HttpURLConnection.HTTP_OK));
+
         String response;
         try {
 
