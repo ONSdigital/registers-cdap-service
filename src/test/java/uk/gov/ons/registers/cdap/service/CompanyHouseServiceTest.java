@@ -91,7 +91,6 @@ public class CompanyHouseServiceTest extends TestBase {
         URL url = new URL(serviceManager.getServiceURL(), "CH/bussinesnumber/11240759");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         assertThat(connection.getResponseCode(), is(HttpURLConnection.HTTP_OK));
-
         String response;
         try {
 
@@ -106,7 +105,7 @@ public class CompanyHouseServiceTest extends TestBase {
     public void testChNumberNotFound() throws Exception {
         URL url = new URL(serviceManager.getServiceURL(), "CH/bussinesnumber/000000");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        Assert.assertEquals(HttpURLConnection.HTTP_NOT_FOUND, connection.getResponseCode());
+        assertThat(connection.getResponseCode(), is(HttpURLConnection.HTTP_NOT_FOUND));
     }
 
     /**
@@ -118,7 +117,7 @@ public class CompanyHouseServiceTest extends TestBase {
     public void testChPostcodeFound() throws Exception {
         URL url = new URL(serviceManager.getServiceURL(), "CH/postcodearea/TA4");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        Assert.assertEquals(HttpURLConnection.HTTP_OK, connection.getResponseCode());
+        assertThat(connection.getResponseCode(), is(HttpURLConnection.HTTP_OK));
         String response;
         try {
 

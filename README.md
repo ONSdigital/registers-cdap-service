@@ -2,7 +2,7 @@
 
 Currently contains Two services:
  - Sic07Service retrieving SIC descriptions for codes
- - CHService
+ - CompanyHouseService
     - Returns a JSON object of company data based on CompanyNumber 
     - Returns JSON objects of company data based on Post Code area
  
@@ -37,7 +37,7 @@ cdap cli deploy app target/registers-cdap-service-0.0.1-SNAPSHOT.jar
 
 cdap cli start service sic07_lookup.Sic07Service
 
-cdap cli start service sic07_lookup.CHService
+cdap cli start service sic07_lookup.CompanyHouseService
 ```
 
 ## Testing the Service
@@ -50,10 +50,10 @@ curl -v localhost:11015/v3/namespaces/default/apps/sic07_lookup/services/Sic07Se
 
 Find company based on Business Number
 ```
-curl -v localhost:11015/v3/namespaces/default/apps/sic07_lookup/services/CHService/methods/CH/number/{number}
+curl -v localhost:11015/vp/services/CompanyHouseService/methods/CH/bussinesnumber/{bussinesnumber}
 ```
 
 Find companies based on Post Code Area
 ```
-curl -v localhost:11015/v3/namespaces/default/apps/sic07_lookup/services/CHService/methods/CH/postcodearea/{postcodearea}
+curl -v localhost:11015/v3/namespaces/default/apps/sic07_lookup/services/CompanyHouseService/methods/CH/postcodearea/{postcodearea}
 ```
