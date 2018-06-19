@@ -40,14 +40,12 @@ public class CHServiceTest extends TestBase {
     public void setUp() throws Exception {
         super.beforeTest();
 
-        // SetUp JSON Object
         HashMap<String, String> testMap = new HashMap<>();
         testMap.put(TEST_CH_NAME_COLUMN, TEST_CH_NAME);
         testMap.put(TEST_CH_POSTCODE_COLUMN, TEST_CH_POSTCODE);
         Gson gson = new Gson();
         TEST_JSON = gson.toJsonTree(testMap);
 
-        // Add JSON To ArrayList for PostCode Results
         TEST_JSON_ARRAYLIST = new ArrayList<>();
         TEST_JSON_ARRAYLIST.add(TEST_JSON);
 

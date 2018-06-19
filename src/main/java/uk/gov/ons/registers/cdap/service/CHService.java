@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class CHService extends AbstractService {
 
-    public static final String SERVICE_NAME = "CHService";
+    static final String SERVICE_NAME = "CHService";
     private static final String SERVICE_DESC = "Service that returns A JSON object of company data based on CompanyNumber";
     private static final String POSTCODE_COLUMN = "regaddress_postcode";
 
@@ -37,12 +37,11 @@ public class CHService extends AbstractService {
 
     /**
      * Handler which defines HTTP endpoints to access information stored in the
-     * {@number CHdata} Dataset.
+     * { @number CHdata} Dataset.
      */
     public static class CHdataHandler extends AbstractHttpServiceHandler {
         private static final Logger LOG = LoggerFactory.getLogger(CHdataHandler.class);
 
-        //Google GSON object for JSON object creation
         private Gson gson = new Gson();
 
         @UseDataSet(Sic07.CH_DATASET_NAME)
@@ -58,7 +57,7 @@ public class CHService extends AbstractService {
 
             Row chRow = chData.get(new Get(number));
 
-            //Error Handing of Null results
+            //Error Handing of empty results
             if (chRow.isEmpty()) {
                 LOG.debug("No record for Business with Company Number, {} found", number);
                 responder.sendStatus(HttpURLConnection.HTTP_NOT_FOUND);
@@ -78,10 +77,8 @@ public class CHService extends AbstractService {
                              @PathParam("postcode") String postcodeArea) {
 
             ArrayList<JsonElement> jsonElementArrayList = new ArrayList<>();
-
             Row row;
 
-            // Scan all rows
             try (Scanner scanner = chData.scan(null, null)) {
                 while ((row = scanner.next()) != null) {
                     String postCode = row.getString(POSTCODE_COLUMN);
@@ -96,7 +93,7 @@ public class CHService extends AbstractService {
                 }
             }
 
-            //Error Handing of Null results
+            //Error Handing of empty results
             if (jsonElementArrayList.isEmpty()) {
                 LOG.debug("No records found for Businesses in PostCode Area: {}", postcodeArea);
                 responder.sendStatus(HttpURLConnection.HTTP_NOT_FOUND);
@@ -112,7 +109,6 @@ public class CHService extends AbstractService {
          */
         private JsonElement byteMapToJSON(Map<byte[], byte[]> hashMap){
 
-            //Loads Results into string Hashmap from byte[] hashMap object
             HashMap<String, String> chBusinessData = new HashMap<>();
 
             // Iterates thought results and casts the byte[] objects to Strings to a <String, String> HashMap
@@ -123,8 +119,7 @@ public class CHService extends AbstractService {
                 chBusinessData.put(keyString, valueString);
             }
 
-            // Creating JSON Object from HashMap
-
+            // Returned JSON Object created from HashMap
             return gson.toJsonTree(chBusinessData);
         }
 
