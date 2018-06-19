@@ -10,8 +10,6 @@ import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -21,14 +19,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.is;
 
 /**
- * Test for {@link CHService}.
+ * Test for {@link CompanyHouseService}.
  */
-public class CHServiceTest extends TestBase {
+public class CompanyHouseServiceTest extends TestBase {
 
     private static final String TEST_CH_NUMBER = "11240759";
 
@@ -45,7 +44,7 @@ public class CHServiceTest extends TestBase {
     public void setUp() throws Exception {
         super.beforeTest();
 
-        HashMap<String, String> testMap = new HashMap<>();
+        Map<String, String> testMap = new HashMap<>();
         testMap.put(TEST_CH_NAME_COLUMN, TEST_CH_NAME);
         testMap.put(TEST_CH_POSTCODE_COLUMN, TEST_CH_POSTCODE);
         Gson gson = new Gson();
@@ -71,7 +70,7 @@ public class CHServiceTest extends TestBase {
         datasetManager.flush();
 
         // Start Sic07Service service
-        serviceManager = appManager.getServiceManager(CHService.SERVICE_NAME).start();
+        serviceManager = appManager.getServiceManager(CompanyHouseService.SERVICE_NAME).start();
 
         // Wait service startup
         serviceManager.waitForStatus(true);
@@ -89,10 +88,8 @@ public class CHServiceTest extends TestBase {
 
     @Test
     public void testChNumberFound() throws Exception {
-        URL url = new URL(serviceManager.getServiceURL(), "CH/number/11240759");
+        URL url = new URL(serviceManager.getServiceURL(), "CH/bussinesnumber/11240759");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-        Assert.assertEquals(HttpURLConnection.HTTP_OK, connection.getResponseCode());
         assertThat(connection.getResponseCode(), is(HttpURLConnection.HTTP_OK));
 
         String response;
@@ -102,12 +99,12 @@ public class CHServiceTest extends TestBase {
         } finally {
             connection.disconnect();
         }
-        Assert.assertEquals(TEST_JSON.toString(), response);
+        assertThat(response, is(TEST_JSON.toString()));
     }
 
     @Test
     public void testChNumberNotFound() throws Exception {
-        URL url = new URL(serviceManager.getServiceURL(), "CH/number/000000");
+        URL url = new URL(serviceManager.getServiceURL(), "CH/bussinesnumber/000000");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         Assert.assertEquals(HttpURLConnection.HTTP_NOT_FOUND, connection.getResponseCode());
     }
@@ -129,13 +126,13 @@ public class CHServiceTest extends TestBase {
         } finally {
             connection.disconnect();
         }
-        Assert.assertEquals(TEST_JSON_ARRAYLIST.toString(), response);
+        assertThat(response, is(TEST_JSON_ARRAYLIST.toString()));
     }
 
     @Test
     public void testChPostcodeNotFound() throws Exception {
         URL url = new URL(serviceManager.getServiceURL(), "CH/postcodearea/NP20");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        Assert.assertEquals(HttpURLConnection.HTTP_NOT_FOUND, connection.getResponseCode());
+        assertThat(connection.getResponseCode(), is(HttpURLConnection.HTTP_NOT_FOUND));
     }
 }
