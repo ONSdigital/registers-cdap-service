@@ -15,6 +15,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.ws.rs.core.Response;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -90,7 +91,7 @@ public class CompanyHouseServiceTest extends TestBase {
     public void testChNumberFound() throws Exception {
         URL url = new URL(serviceManager.getServiceURL(), "CH/bussinesnumber/11240759");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        assertThat(connection.getResponseCode(), is(HttpURLConnection.HTTP_OK));
+        assertThat(connection.getResponseCode(), is(Response.Status.OK.getStatusCode()));
         String response;
         try {
 
@@ -105,7 +106,7 @@ public class CompanyHouseServiceTest extends TestBase {
     public void testChNumberNotFound() throws Exception {
         URL url = new URL(serviceManager.getServiceURL(), "CH/bussinesnumber/000000");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        assertThat(connection.getResponseCode(), is(HttpURLConnection.HTTP_NOT_FOUND));
+        assertThat(connection.getResponseCode(), is(Response.Status.NOT_FOUND.getStatusCode()));
     }
 
     /**
@@ -117,7 +118,7 @@ public class CompanyHouseServiceTest extends TestBase {
     public void testChPostcodeFound() throws Exception {
         URL url = new URL(serviceManager.getServiceURL(), "CH/postcodearea/TA4");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        assertThat(connection.getResponseCode(), is(HttpURLConnection.HTTP_OK));
+        assertThat(connection.getResponseCode(), is(Response.Status.OK.getStatusCode()));
         String response;
         try {
 
@@ -132,6 +133,6 @@ public class CompanyHouseServiceTest extends TestBase {
     public void testChPostcodeNotFound() throws Exception {
         URL url = new URL(serviceManager.getServiceURL(), "CH/postcodearea/NP20");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        assertThat(connection.getResponseCode(), is(HttpURLConnection.HTTP_NOT_FOUND));
+        assertThat(connection.getResponseCode(), is(Response.Status.NOT_FOUND.getStatusCode()));
     }
 }

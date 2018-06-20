@@ -64,7 +64,7 @@ public class CompanyHouseService extends AbstractService {
             //Error Handing of empty results
             if (chRow.isEmpty()) {
                 LOG.debug("No record for Business with Company Number, {} found", number);
-                responder.sendStatus(HttpURLConnection.HTTP_NOT_FOUND);
+                responder.sendStatus(Response.Status.NOT_FOUND.getStatusCode());
                 return;
             }
 
