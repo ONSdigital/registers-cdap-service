@@ -11,7 +11,6 @@ import com.google.common.io.ByteStreams;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -89,24 +88,19 @@ public class CompanyHouseServiceTest extends TestBase {
 
     @Test
     public void testChNumberFound() throws Exception {
-        URL url = new URL(serviceManager.getServiceURL(), "CH/bussinesnumber/11240759");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        assertThat(connection.getResponseCode(), is(Response.Status.OK.getStatusCode()));
-        String response;
-        try {
+        HttpURLConnection connection = httpConnectionHelper("CH/bussinesnumber/11240759", Response.Status.OK);
 
+        String response;
+        try (AutoCloseable ignored = connection::disconnect) {
             response = new String(ByteStreams.toByteArray(connection.getInputStream()), Charsets.UTF_8);
-        } finally {
-            connection.disconnect();
         }
+
         assertThat(response, is(TEST_JSON.toString()));
     }
 
     @Test
     public void testChNumberNotFound() throws Exception {
-        URL url = new URL(serviceManager.getServiceURL(), "CH/bussinesnumber/000000");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        assertThat(connection.getResponseCode(), is(Response.Status.NOT_FOUND.getStatusCode()));
+        httpConnectionHelper("CH/bussinesnumber/000000", Response.Status.NOT_FOUND);
     }
 
     /**
@@ -116,23 +110,26 @@ public class CompanyHouseServiceTest extends TestBase {
 
     @Test
     public void testChPostcodeFound() throws Exception {
-        URL url = new URL(serviceManager.getServiceURL(), "CH/postcodearea/TA4");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        assertThat(connection.getResponseCode(), is(Response.Status.OK.getStatusCode()));
-        String response;
-        try {
+        HttpURLConnection connection = httpConnectionHelper("CH/postcodearea/TA4", Response.Status.OK);
 
+        String response;
+        try (AutoCloseable ignored = connection::disconnect) {
             response = new String(ByteStreams.toByteArray(connection.getInputStream()), Charsets.UTF_8);
-        } finally {
-            connection.disconnect();
         }
+
         assertThat(response, is(TEST_JSON_ARRAYLIST.toString()));
     }
 
     @Test
     public void testChPostcodeNotFound() throws Exception {
-        URL url = new URL(serviceManager.getServiceURL(), "CH/postcodearea/NP20");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        assertThat(connection.getResponseCode(), is(Response.Status.NOT_FOUND.getStatusCode()));
+        httpConnectionHelper("CH/postcodearea/NP20", Response.Status.NOT_FOUND);
     }
+
+    private HttpURLConnection httpConnectionHelper(String testURL, Response.Status expectedStatus) throws Exception{
+        URL url = new URL(serviceManager.getServiceURL(), testURL);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        assertThat(connection.getResponseCode(), is(expectedStatus.getStatusCode()));
+        return connection;
+    }
+
 }

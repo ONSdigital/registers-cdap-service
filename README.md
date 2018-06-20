@@ -50,7 +50,7 @@ curl -v localhost:11015/v3/namespaces/default/apps/sic07_lookup/services/Sic07Se
 
 Find company based on Business Number
 ```
-curl -v localhost:11015/vp/services/CompanyHouseService/methods/CH/bussinesnumber/{bussinesnumber}
+curl -v localhost:11015/v3/namespaces/default/apps/sic07_lookup/services/CompanyHouseService/methods/CH/bussinesnumber/{bussinesnumber}
 ```
 
 Find companies based on Post Code Area
