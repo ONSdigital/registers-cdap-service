@@ -10,7 +10,7 @@ import co.cask.cdap.api.service.http.AbstractHttpServiceHandler;
 import co.cask.cdap.api.service.http.HttpServiceRequest;
 import co.cask.cdap.api.service.http.HttpServiceResponder;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,9 +20,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
 import java.lang.invoke.MethodHandles;
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +28,12 @@ public class CompanyHouseService extends AbstractService {
 
     static final String SERVICE_NAME = "CompanyHouseService";
     private static final String SERVICE_DESC = "Service that returns A JSON object of company data based on CompanyNumber";
+
     private static final String POSTCODE_COLUMN = "regaddress_postcode";
+    private static final String COMPANY_NUMBER_COLUMN = "companynumber";
+    private static final String PERIOD_COLUMN = "period";
+    private static final String ID_COLUMN = "id";
+
 
     @Override
     protected void configure() {
@@ -68,7 +71,7 @@ public class CompanyHouseService extends AbstractService {
                 return;
             }
 
-            responder.sendJson(gson.toJsonTree(byteMapToJSON(chRow.getColumns())));
+            responder.sendJson(byteMapToJSON(chRow.getColumns()));
 
         }
 
@@ -80,7 +83,7 @@ public class CompanyHouseService extends AbstractService {
         public void getBusinessByPostCodeArea(HttpServiceRequest request, HttpServiceResponder responder,
                              @PathParam("postcode") String postcodeArea) {
 
-            List<JsonElement> jsonElementArrayList = new ArrayList<>();
+            List<JsonObject> jsonElementArrayList = new ArrayList<>();
             Row row;
 
             try (Scanner scanner = chData.scan(null, null)) {
@@ -111,15 +114,17 @@ public class CompanyHouseService extends AbstractService {
 
         /**
          * Method that takes byte[] HashMap from results and returns a decoded JSON object with the results
+         * Following the JSON structure of Admin Data Service
          */
-        private JsonElement byteMapToJSON(Map<byte[], byte[]> hashMap){
+        private JsonObject byteMapToJSON(Map<byte[], byte[]> hashMap) {
 
-            Map<String, String> chBusinessData = new HashMap<>();
+            JsonObject chJsonData = new JsonObject();
+            JsonObject chJsonVariables = new JsonObject();
 
-            // Iterates thought results and casts the byte[] objects to Strings to a <String, String> HashMap
+            // Iterates thought results and casts the byte[] objects to Strings to a JSON Object
             for (Map.Entry<byte[], byte[]> entry : hashMap.entrySet()) {
-                String keyString = null;
-                String valueString = null;
+                String keyString = "";
+                String valueString = "";
 
                 try {
                     keyString = new String(entry.getKey(), "UTF-8");
@@ -128,12 +133,24 @@ public class CompanyHouseService extends AbstractService {
                     e.printStackTrace();
                 }
 
+                //Adds id and period based on JSON structure
+                if (keyString.equals(PERIOD_COLUMN)) {
+                    chJsonData.add(PERIOD_COLUMN, gson.toJsonTree(valueString));
+                }
+                else if (keyString.equals(COMPANY_NUMBER_COLUMN)) {
+                    chJsonData.add(ID_COLUMN, gson.toJsonTree(valueString));
+                }
 
-                chBusinessData.put(keyString, valueString);
+                //All other values to separate JSON object
+                chJsonVariables.add(keyString, gson.toJsonTree(valueString));
+
             }
 
+            //Adding Variables to the "variables" element in the main JSON Object
+            chJsonData.add("variables", chJsonVariables);
+
             // Returned JSON Object created from HashMap
-            return gson.toJsonTree(chBusinessData);
+            return chJsonData;
         }
 
 
