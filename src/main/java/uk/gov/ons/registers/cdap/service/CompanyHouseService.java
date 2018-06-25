@@ -29,11 +29,13 @@ public class CompanyHouseService extends AbstractService {
     static final String SERVICE_NAME = "CompanyHouseService";
     private static final String SERVICE_DESC = "Service that returns A JSON object of company data based on CompanyNumber";
 
-    private static final String POSTCODE_COLUMN = "regaddress_postcode";
-    private static final String COMPANY_NUMBER_COLUMN = "companynumber";
-    private static final String PERIOD_COLUMN = "period";
-    private static final String ID_COLUMN = "id";
-
+    //Column names used for accessing and tests
+    static final String POSTCODE_COLUMN = "regaddress_postcode";
+    static final String COMPANY_NAME_COLUMN = "companyname";
+    static final String COMPANY_NUMBER_COLUMN = "companynumber";
+    static final String PERIOD_COLUMN = "period";
+    static final String ID_COLUMN = "id";
+    static final String VARIABLES_COLUMN = "variables";
 
     @Override
     protected void configure() {
@@ -143,11 +145,10 @@ public class CompanyHouseService extends AbstractService {
 
                 //All other values to separate JSON object
                 chJsonVariables.add(keyString, gson.toJsonTree(valueString));
-
             }
 
             //Adding Variables to the "variables" element in the main JSON Object
-            chJsonData.add("variables", chJsonVariables);
+            chJsonData.add(VARIABLES_COLUMN, chJsonVariables);
 
             // Returned JSON Object created from HashMap
             return chJsonData;
