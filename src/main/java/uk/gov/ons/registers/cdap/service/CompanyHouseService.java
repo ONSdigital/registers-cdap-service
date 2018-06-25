@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.ons.registers.cdap.service.TableColumns.CompanyHouseTable;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -28,14 +29,6 @@ public class CompanyHouseService extends AbstractService {
 
     static final String SERVICE_NAME = "CompanyHouseService";
     private static final String SERVICE_DESC = "Service that returns A JSON object of company data based on CompanyNumber";
-
-    //Column names used for accessing and tests
-    static final String POSTCODE_COLUMN = "regaddress_postcode";
-    static final String COMPANY_NAME_COLUMN = "companyname";
-    static final String COMPANY_NUMBER_COLUMN = "companynumber";
-    static final String PERIOD_COLUMN = "period";
-    static final String ID_COLUMN = "id";
-    static final String VARIABLES_COLUMN = "variables";
 
     @Override
     protected void configure() {
@@ -90,7 +83,7 @@ public class CompanyHouseService extends AbstractService {
 
             try (Scanner scanner = chData.scan(null, null)) {
                 while ((row = scanner.next()) != null) {
-                    String postCode = row.getString(POSTCODE_COLUMN);
+                    String postCode = row.getString(CompanyHouseTable.POSTCODE_COLUMN);
 
                     if (postCode != null) {
                         String scanPostCode[] = postCode.split(" ");
@@ -136,11 +129,10 @@ public class CompanyHouseService extends AbstractService {
                 }
 
                 //Adds id and period based on JSON structure
-                if (keyString.equals(PERIOD_COLUMN)) {
-                    chJsonData.add(PERIOD_COLUMN, gson.toJsonTree(valueString));
-                }
-                else if (keyString.equals(COMPANY_NUMBER_COLUMN)) {
-                    chJsonData.add(ID_COLUMN, gson.toJsonTree(valueString));
+                if (keyString.equals(CompanyHouseTable.PERIOD_COLUMN)) {
+                    chJsonData.add(CompanyHouseTable.PERIOD_COLUMN, gson.toJsonTree(valueString));
+                } else if (keyString.equals(CompanyHouseTable.COMPANY_NUMBER_COLUMN)) {
+                    chJsonData.add(CompanyHouseTable.ID_COLUMN, gson.toJsonTree(valueString));
                 }
 
                 //All other values to separate JSON object
@@ -148,7 +140,7 @@ public class CompanyHouseService extends AbstractService {
             }
 
             //Adding Variables to the "variables" element in the main JSON Object
-            chJsonData.add(VARIABLES_COLUMN, chJsonVariables);
+            chJsonData.add(CompanyHouseTable.VARIABLES_COLUMN, chJsonVariables);
 
             // Returned JSON Object created from HashMap
             return chJsonData;

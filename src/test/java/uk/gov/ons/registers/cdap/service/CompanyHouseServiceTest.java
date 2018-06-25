@@ -14,6 +14,7 @@ import com.google.gson.JsonObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.ons.registers.cdap.service.TableColumns.CompanyHouseTable;
 
 import javax.ws.rs.core.Response;
 import java.net.HttpURLConnection;
@@ -49,11 +50,11 @@ public class CompanyHouseServiceTest extends TestBase {
         Gson gson = new Gson();
         TEST_JSON = new JsonObject();
 
-        testVariableJson.add(CompanyHouseService.COMPANY_NAME_COLUMN, gson.toJsonTree(TEST_CH_NAME));
-        testVariableJson.add(CompanyHouseService.ID_COLUMN, gson.toJsonTree(TEST_CH_ID));
-        testVariableJson.add(CompanyHouseService.POSTCODE_COLUMN, gson.toJsonTree(TEST_CH_POSTCODE));
+        testVariableJson.add(CompanyHouseTable.COMPANY_NAME_COLUMN, gson.toJsonTree(TEST_CH_NAME));
+        testVariableJson.add(CompanyHouseTable.ID_COLUMN, gson.toJsonTree(TEST_CH_ID));
+        testVariableJson.add(CompanyHouseTable.POSTCODE_COLUMN, gson.toJsonTree(TEST_CH_POSTCODE));
 
-        TEST_JSON.add(CompanyHouseService.VARIABLES_COLUMN, testVariableJson);
+        TEST_JSON.add(CompanyHouseTable.VARIABLES_COLUMN, testVariableJson);
 
         TEST_JSON_ARRAYLIST = new ArrayList<>();
         TEST_JSON_ARRAYLIST.add(TEST_JSON);
@@ -67,9 +68,9 @@ public class CompanyHouseServiceTest extends TestBase {
 
         // Add a Business Number, name and PostCode
         Put put = new Put(TEST_CH_NUMBER);
-        put.add(CompanyHouseService.COMPANY_NAME_COLUMN, TEST_CH_NAME);
-        put.add(CompanyHouseService.POSTCODE_COLUMN, TEST_CH_POSTCODE);
-        put.add(CompanyHouseService.ID_COLUMN, TEST_CH_ID);
+        put.add(CompanyHouseTable.COMPANY_NAME_COLUMN, TEST_CH_NAME);
+        put.add(CompanyHouseTable.POSTCODE_COLUMN, TEST_CH_POSTCODE);
+        put.add(CompanyHouseTable.ID_COLUMN, TEST_CH_ID);
         companyDataset.put(put);
 
         // Commit our new row to the dataset
