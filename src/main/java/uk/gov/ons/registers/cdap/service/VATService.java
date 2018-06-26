@@ -23,7 +23,6 @@ public class VATService extends AbstractService {
 
     static final String SERVICE_NAME = "VATService";
     private static final String SERVICE_DESC = "Service that returns A JSON object of company data based on VAT data";
-    //private static final String POSTCODE_COLUMN = "regaddress_postcode";
 
     @Override
     protected void configure() {

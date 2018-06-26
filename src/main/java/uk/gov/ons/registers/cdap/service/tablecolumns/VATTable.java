@@ -6,7 +6,7 @@ public class VATTable {
     }
 
     /**
-     * Column names used for accessing and tests for the Company House Service
+     * Column names used for accessing and tests for the VAT Service
      */
 
     public static final String DATASET_NAME = "VAT_DATA";
