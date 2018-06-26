@@ -9,6 +9,8 @@ public class CompanyHouseTable {
      * Column names used for accessing and tests for the Company House Service
      */
 
+    public static final String DATASET_NAME = "CompanyData";
+
     //Column names used for accessing and tests
     public static String POSTCODE_COLUMN = "regaddress_postcode";
     public static String COMPANY_NAME_COLUMN = "companyname";

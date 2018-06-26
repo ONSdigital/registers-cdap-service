@@ -10,7 +10,7 @@ import co.cask.cdap.api.service.http.AbstractHttpServiceHandler;
 import co.cask.cdap.api.service.http.HttpServiceRequest;
 import co.cask.cdap.api.service.http.HttpServiceResponder;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.ons.registers.cdap.service.tablecolumns.CompanyHouseTable;
@@ -19,11 +19,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
-import java.io.UnsupportedEncodingException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class CompanyHouseService extends AbstractService {
 
@@ -46,8 +44,9 @@ public class CompanyHouseService extends AbstractService {
 
         private Gson gson = new Gson();
 
-        @UseDataSet(Sic07.CH_DATASET_NAME)
+        @UseDataSet(CompanyHouseTable.DATASET_NAME)
         private Table chData;
+
 
         /**
          * Returns The Business Information as a JSON object from an entered Company Number
@@ -66,7 +65,7 @@ public class CompanyHouseService extends AbstractService {
                 return;
             }
 
-            responder.sendJson(byteMapToJSON(chRow.getColumns()));
+            responder.sendJson(JSONHelper.byteMapToGenericJSON(chRow.getColumns(), CompanyHouseTable.COMPANY_NUMBER_COLUMN));
 
         }
 
@@ -78,7 +77,7 @@ public class CompanyHouseService extends AbstractService {
         public void getBusinessByPostCodeArea(HttpServiceRequest request, HttpServiceResponder responder,
                              @PathParam("postcode") String postcodeArea) {
 
-            List<JsonObject> jsonElementArrayList = new ArrayList<>();
+            List<JsonElement> jsonElementArrayList = new ArrayList<>();
             Row row;
 
             try (Scanner scanner = chData.scan(null, null)) {
@@ -89,7 +88,7 @@ public class CompanyHouseService extends AbstractService {
                         String scanPostCode[] = postCode.split(" ");
 
                         if (scanPostCode[0].equals(postcodeArea)){
-                            jsonElementArrayList.add(byteMapToJSON(row.getColumns()));
+                            jsonElementArrayList.add(JSONHelper.byteMapToGenericJSON(row.getColumns(), CompanyHouseTable.COMPANY_NUMBER_COLUMN));
                         }
                     }
                 }
@@ -106,49 +105,5 @@ public class CompanyHouseService extends AbstractService {
             responder.sendJson(gson.toJsonTree(jsonElementArrayList));
 
         }
-
-        /**
-         * Method that takes byte[] HashMap from results and returns a decoded JSON object with the results
-         * Following the JSON structure of Admin Data Service
-         */
-        private JsonObject byteMapToJSON(Map<byte[], byte[]> hashMap) {
-
-            JsonObject chJsonData = new JsonObject();
-            JsonObject chJsonVariables = new JsonObject();
-
-            // Iterates thought results and casts the byte[] objects to Strings to a JSON Object
-            for (Map.Entry<byte[], byte[]> entry : hashMap.entrySet()) {
-                String keyString = "";
-                String valueString = "";
-
-                try {
-                    keyString = new String(entry.getKey(), "UTF-8");
-                    valueString = new String(entry.getValue(), "UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-
-                //Adds id and period based on JSON structure
-                if (keyString.equals(CompanyHouseTable.PERIOD_COLUMN)) {
-                    chJsonData.add(CompanyHouseTable.PERIOD_COLUMN, gson.toJsonTree(valueString));
-                } else if (keyString.equals(CompanyHouseTable.COMPANY_NUMBER_COLUMN)) {
-                    chJsonData.add(CompanyHouseTable.ID_COLUMN, gson.toJsonTree(valueString));
-                }
-
-                //All other values to separate JSON object
-                chJsonVariables.add(keyString, gson.toJsonTree(valueString));
-            }
-
-            //Adding Variables to the "variables" element in the main JSON Object
-            chJsonData.add(CompanyHouseTable.VARIABLES_COLUMN, chJsonVariables);
-
-            // Returned JSON Object created from HashMap
-            return chJsonData;
-        }
-
-
     }
-
-
-
 }
