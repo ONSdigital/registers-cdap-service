@@ -1,4 +1,4 @@
-package uk.gov.ons.registers.cdap.service.TableColumns;
+package uk.gov.ons.registers.cdap.service.tablecolumns;
 
 public class CompanyHouseTable {
     private CompanyHouseTable(){

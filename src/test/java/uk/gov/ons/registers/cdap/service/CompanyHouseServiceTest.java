@@ -14,14 +14,12 @@ import com.google.gson.JsonObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import uk.gov.ons.registers.cdap.service.TableColumns.CompanyHouseTable;
+import uk.gov.ons.registers.cdap.service.tablecolumns.CompanyHouseTable;
 
 import javax.ws.rs.core.Response;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.is;

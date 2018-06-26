@@ -13,7 +13,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.ons.registers.cdap.service.TableColumns.CompanyHouseTable;
+import uk.gov.ons.registers.cdap.service.tablecolumns.CompanyHouseTable;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
