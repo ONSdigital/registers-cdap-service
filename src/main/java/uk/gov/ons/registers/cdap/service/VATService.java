@@ -51,16 +51,16 @@ public class VATService extends AbstractService {
         public void getBusinessByNumber(HttpServiceRequest request, HttpServiceResponder responder,
                                         @PathParam("vatref") String vatref) {
 
-            Row chRow = vatData.get(new Get(vatref));
+            Row vatRow = vatData.get(new Get(vatref));
 
             //Error Handing of empty results
-            if (chRow.isEmpty()) {
+            if (vatRow.isEmpty()) {
                 LOG.debug("No record for Business with Company Number, {} found", vatref);
                 responder.sendStatus(Response.Status.NOT_FOUND.getStatusCode());
                 return;
             }
 
-            responder.sendJson(gson.toJsonTree(chRow.toString()));
+            responder.sendJson(gson.toJsonTree(JSONHelper.byteMapToGenericJSON(vatRow.getColumns())));
 
         }
     }
