@@ -11,6 +11,7 @@ import co.cask.cdap.api.service.http.HttpServiceResponder;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.ons.registers.cdap.service.tablecolumns.VATTable;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -40,7 +41,7 @@ public class VATService extends AbstractService {
 
         private Gson gson = new Gson();
 
-        @UseDataSet(Sic07.VAT_DATASET_NAME)
+        @UseDataSet(VATTable.DATASET_NAME)
         private Table vatData;
 
         /**
@@ -60,7 +61,7 @@ public class VATService extends AbstractService {
                 return;
             }
 
-            responder.sendJson(gson.toJsonTree(JSONHelper.byteMapToGenericJSON(vatRow.getColumns())));
+            responder.sendJson(gson.toJsonTree(JSONHelper.byteMapToGenericJSON(vatRow.getColumns(), VATTable.VAT_REF_COLUMN)));
 
         }
     }
