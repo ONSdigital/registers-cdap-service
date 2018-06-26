@@ -35,6 +35,7 @@ public class CompanyHouseServiceTest extends TestBase {
     private static final String TEST_CH_NUMBER = "11240759";
     private static final String TEST_CH_ID = TEST_CH_NUMBER;
     private static final String TEST_CH_NAME = "ANIMAL MICROCHIPS LTD";
+    private static final String TEST_CH_POSTCODE_COLUMN = "regaddress_postcode";
     private static final String TEST_CH_POSTCODE = "TA4 3NA";
 
     private JsonObject TEST_JSON;
@@ -58,7 +59,6 @@ public class CompanyHouseServiceTest extends TestBase {
 
         TEST_JSON.add(CompanyHouseTable.VARIABLES_COLUMN, testVariableJson);
         TEST_JSON_ARRAYLIST.add(TEST_JSON);
-
 
         // Deploy the Sic07 application
         ApplicationManager appManager = deployApplication(Sic07.class);
@@ -141,7 +141,4 @@ public class CompanyHouseServiceTest extends TestBase {
         assertThat(connection.getResponseCode(), is(expectedStatus.getStatusCode()));
         return connection;
     }
-
-
-
 }

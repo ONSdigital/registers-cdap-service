@@ -47,7 +47,6 @@ public class CompanyHouseService extends AbstractService {
         @UseDataSet(CompanyHouseTable.DATASET_NAME)
         private Table chData;
 
-
         /**
          * Returns The Business Information as a JSON object from an entered Company Number
          */
@@ -106,4 +105,7 @@ public class CompanyHouseService extends AbstractService {
 
         }
     }
+
+
+
 }
