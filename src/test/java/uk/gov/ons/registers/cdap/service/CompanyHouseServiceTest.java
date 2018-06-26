@@ -10,16 +10,16 @@ import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.ons.registers.cdap.service.tablecolumns.CompanyHouseTable;
 
 import javax.ws.rs.core.Response;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.is;
@@ -29,13 +29,13 @@ import static org.hamcrest.Matchers.is;
  */
 public class CompanyHouseServiceTest extends TestBase {
 
+    //Test Company Data
     private static final String TEST_CH_NUMBER = "11240759";
-
-    private static final String TEST_CH_NAME_COLUMN = "companyname";
+    private static final String TEST_CH_ID = TEST_CH_NUMBER;
     private static final String TEST_CH_NAME = "ANIMAL MICROCHIPS LTD";
-    private static final String TEST_CH_POSTCODE_COLUMN = "regaddress_postcode";
     private static final String TEST_CH_POSTCODE = "TA4 3NA";
-    private JsonElement TEST_JSON;
+
+    private JsonObject TEST_JSON;
     private ArrayList<JsonElement> TEST_JSON_ARRAYLIST;
 
     private ServiceManager serviceManager;
@@ -44,11 +44,15 @@ public class CompanyHouseServiceTest extends TestBase {
     public void setUp() throws Exception {
         super.beforeTest();
 
-        Map<String, String> testMap = new HashMap<>();
-        testMap.put(TEST_CH_NAME_COLUMN, TEST_CH_NAME);
-        testMap.put(TEST_CH_POSTCODE_COLUMN, TEST_CH_POSTCODE);
+        JsonObject testVariableJson = new JsonObject();
         Gson gson = new Gson();
-        TEST_JSON = gson.toJsonTree(testMap);
+        TEST_JSON = new JsonObject();
+
+        testVariableJson.add(CompanyHouseTable.COMPANY_NAME_COLUMN, gson.toJsonTree(TEST_CH_NAME));
+        testVariableJson.add(CompanyHouseTable.ID_COLUMN, gson.toJsonTree(TEST_CH_ID));
+        testVariableJson.add(CompanyHouseTable.POSTCODE_COLUMN, gson.toJsonTree(TEST_CH_POSTCODE));
+
+        TEST_JSON.add(CompanyHouseTable.VARIABLES_COLUMN, testVariableJson);
 
         TEST_JSON_ARRAYLIST = new ArrayList<>();
         TEST_JSON_ARRAYLIST.add(TEST_JSON);
@@ -58,13 +62,14 @@ public class CompanyHouseServiceTest extends TestBase {
 
         // Get the CompanyHouse dataset
         DataSetManager<Table> datasetManager = getDataset(Sic07.CH_DATASET_NAME);
-        Table sicCodes = datasetManager.get();
+        Table companyDataset = datasetManager.get();
 
         // Add a Business Number, name and PostCode
         Put put = new Put(TEST_CH_NUMBER);
-        put.add(TEST_CH_NAME_COLUMN, TEST_CH_NAME);
-        put.add(TEST_CH_POSTCODE_COLUMN, TEST_CH_POSTCODE);
-        sicCodes.put(put);
+        put.add(CompanyHouseTable.COMPANY_NAME_COLUMN, TEST_CH_NAME);
+        put.add(CompanyHouseTable.POSTCODE_COLUMN, TEST_CH_POSTCODE);
+        put.add(CompanyHouseTable.ID_COLUMN, TEST_CH_ID);
+        companyDataset.put(put);
 
         // Commit our new row to the dataset
         datasetManager.flush();
