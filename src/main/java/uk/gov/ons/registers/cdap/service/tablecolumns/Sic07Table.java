@@ -12,5 +12,5 @@ public class Sic07Table {
     public static final String DATASET_NAME = "sic07";
 
     //Column names used for accessing and tests
-    public static final String DESC_COLUMN = "description";
+    public static final  String DESC_COLUMN = "description";
 }

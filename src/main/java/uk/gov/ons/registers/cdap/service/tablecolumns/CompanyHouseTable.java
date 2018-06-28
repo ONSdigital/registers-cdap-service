@@ -12,12 +12,12 @@ public class CompanyHouseTable {
     public static final String DATASET_NAME = "CompanyData";
 
     //Column names used for accessing and tests
-    public static String POSTCODE_COLUMN = "regaddress_postcode";
-    public static String COMPANY_NAME_COLUMN = "companyname";
-    public static String COMPANY_NUMBER_COLUMN = "companynumber";
+    public static final String POSTCODE_COLUMN = "regaddress_postcode";
+    public static final String COMPANY_NAME_COLUMN = "companyname";
+    public static final String COMPANY_NUMBER_COLUMN = "companynumber";
 
     //Generic Columns use with the Admin Data Service JSON structure
-    public static String PERIOD_COLUMN = "period";
-    public static String ID_COLUMN = "id";
-    public static String VARIABLES_COLUMN = "variables";
+    public static final String PERIOD_COLUMN = "period";
+    public static final String ID_COLUMN = "id";
+    public static final String VARIABLES_COLUMN = "variables";
 }

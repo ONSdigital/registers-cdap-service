@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import uk.gov.ons.registers.cdap.service.tablecolumns.CompanyHouseTable;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -27,11 +28,9 @@ class JSONHelper {
 
         // Iterates thought results and casts the byte[] objects to Strings to a JSON Object
         for (Map.Entry<byte[], byte[]> entry : hashMap.entrySet()) {
-            String keyString;
-            String valueString;
 
-            keyString = new String(entry.getKey(), StandardCharsets.UTF_8);
-            valueString = new String(entry.getValue(), StandardCharsets.UTF_8);
+            String keyString = decodeByteArrToString(entry.getKey());
+            String valueString = decodeByteArrToString(entry.getValue());
 
             //Adds id and period based on JSON structure
             if (keyString.equals(CompanyHouseTable.PERIOD_COLUMN)) {
@@ -50,5 +49,9 @@ class JSONHelper {
 
         // Returned JSON Object created from HashMap
         return jsonData;
+    }
+
+    static String decodeByteArrToString(byte[] byteInput) {
+        return new String(byteInput, StandardCharsets.UTF_8);
     }
 }

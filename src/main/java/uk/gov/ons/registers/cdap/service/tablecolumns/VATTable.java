@@ -12,13 +12,13 @@ public class VATTable {
     public static final String DATASET_NAME = "VAT_DATA";
 
     //Column names used for accessing and tests
-    public static String VAT_REF_COLUMN = "vatref";
-    public static String UBRN_COLUMN = "ubrn";
-    public static String NAME_LINE_COLUMN = "nameline";
-    public static String LEGAL_STATUS_COLUMN = "legalstatus";
+    public static final String VAT_REF_COLUMN = "vatref";
+    public static final String UBRN_COLUMN = "ubrn";
+    public static final String NAME_LINE_COLUMN = "nameline";
+    public static final String LEGAL_STATUS_COLUMN = "legalstatus";
 
     //Generic Columns use with the Admin Data Service JSON structure
-    public static String PERIOD_COLUMN = "period";
-    public static String ID_COLUMN = "id";
-    public static String VARIABLES_COLUMN = "variables";
+    public static final String PERIOD_COLUMN = "period";
+    public static final String ID_COLUMN = "id";
+    public static final String VARIABLES_COLUMN = "variables";
 }

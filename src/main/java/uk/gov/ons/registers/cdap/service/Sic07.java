@@ -1,10 +1,10 @@
 package uk.gov.ons.registers.cdap.service;
 
-        import co.cask.cdap.api.app.AbstractApplication;
-        import co.cask.cdap.api.dataset.table.Table;
-        import uk.gov.ons.registers.cdap.service.tablecolumns.CompanyHouseTable;
-        import uk.gov.ons.registers.cdap.service.tablecolumns.Sic07Table;
-        import uk.gov.ons.registers.cdap.service.tablecolumns.VATTable;
+import co.cask.cdap.api.app.AbstractApplication;
+import co.cask.cdap.api.dataset.table.Table;
+import uk.gov.ons.registers.cdap.service.tablecolumns.CompanyHouseTable;
+import uk.gov.ons.registers.cdap.service.tablecolumns.Sic07Table;
+import uk.gov.ons.registers.cdap.service.tablecolumns.VATTable;
 
 /**
  * An application to provide access to SIC (industry) codes
