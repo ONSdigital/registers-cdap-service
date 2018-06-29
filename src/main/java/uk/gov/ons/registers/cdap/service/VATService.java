@@ -18,6 +18,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import java.lang.invoke.MethodHandles;
+import java.util.function.Function;
 
 public class VATService extends AbstractService {
 
@@ -30,6 +31,24 @@ public class VATService extends AbstractService {
         setDescription(SERVICE_DESC);
         addHandler(new VATService.VATdataHandler());
     }
+
+    private static Function<String, String> mapAndFilterKeys = (sourceColumnName) -> {
+        String destinationColumnName;
+
+        switch (sourceColumnName) {
+            case VATTable.PERIOD_COLUMN:
+                destinationColumnName = VATTable.PERIOD_COLUMN;
+                break;
+            case VATTable.VAT_REF_COLUMN:
+                destinationColumnName = VATTable.ID_COLUMN;
+                break;
+            default:
+                destinationColumnName = "";
+        }
+
+        return destinationColumnName;
+    };
+
 
     /**
      * Handler which defines HTTP endpoints to access information stored in the
@@ -60,7 +79,7 @@ public class VATService extends AbstractService {
                 return;
             }
 
-            responder.sendJson(gson.toJsonTree(JSONHelper.byteMapToGenericJSON(vatRow.getColumns(), VATTable.VAT_REF_COLUMN)));
+            responder.sendJson(gson.toJsonTree(JSONHelper.byteMapToGenericJSON(vatRow.getColumns(), mapAndFilterKeys)));
 
         }
     }

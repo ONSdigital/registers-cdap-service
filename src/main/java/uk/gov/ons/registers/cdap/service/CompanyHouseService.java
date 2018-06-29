@@ -22,6 +22,7 @@ import javax.ws.rs.core.Response;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public class CompanyHouseService extends AbstractService {
 
@@ -34,6 +35,23 @@ public class CompanyHouseService extends AbstractService {
         setDescription(SERVICE_DESC);
         addHandler(new CHdataHandler());
     }
+
+    private static Function<String, String> mapAndFilterKeys = (sourceColumnName) -> {
+        String destinationColumnName;
+
+        switch (sourceColumnName) {
+            case CompanyHouseTable.PERIOD_COLUMN:
+                destinationColumnName = CompanyHouseTable.PERIOD_COLUMN;
+                break;
+            case CompanyHouseTable.COMPANY_NUMBER_COLUMN:
+                destinationColumnName = CompanyHouseTable.ID_COLUMN;
+                break;
+            default:
+                destinationColumnName = "";
+        }
+
+        return destinationColumnName;
+    };
 
     /**
      * Handler which defines HTTP endpoints to access information stored in the
@@ -64,7 +82,7 @@ public class CompanyHouseService extends AbstractService {
                 return;
             }
 
-            responder.sendJson(JSONHelper.byteMapToGenericJSON(chRow.getColumns(), CompanyHouseTable.COMPANY_NUMBER_COLUMN));
+            responder.sendJson(JSONHelper.byteMapToGenericJSON(chRow.getColumns(), mapAndFilterKeys));
 
         }
 
@@ -87,7 +105,7 @@ public class CompanyHouseService extends AbstractService {
                         String scanPostCode[] = postCode.split(" ");
 
                         if (scanPostCode[0].equals(postcodeArea)){
-                            jsonElementArrayList.add(JSONHelper.byteMapToGenericJSON(row.getColumns(), CompanyHouseTable.COMPANY_NUMBER_COLUMN));
+                            jsonElementArrayList.add(JSONHelper.byteMapToGenericJSON(row.getColumns(), mapAndFilterKeys));
                         }
                     }
                 }

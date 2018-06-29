@@ -4,10 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import uk.gov.ons.registers.cdap.service.tablecolumns.CompanyHouseTable;
+import uk.gov.ons.registers.cdap.service.tablecolumns.VATTable;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.function.Function;
 
 class JSONHelper {
     private JSONHelper(){
@@ -20,7 +21,7 @@ class JSONHelper {
      *
      * String referenceColumnName is used to set the ID of the JSON object from the rowkey column in dataset being used
      */
-    static JsonElement byteMapToGenericJSON(Map<byte[], byte[]> hashMap, String referenceColumnName){
+    static JsonElement byteMapToGenericJSON(Map<byte[], byte[]> hashMap, Function<String, String> mapColumnName){
 
         Gson gson = new Gson();
         JsonObject jsonData = new JsonObject();
@@ -32,15 +33,12 @@ class JSONHelper {
             String keyString = decodeByteArrToString(entry.getKey());
             String valueString = decodeByteArrToString(entry.getValue());
 
-            //Adds id and period based on JSON structure
-            if (keyString.equals(CompanyHouseTable.PERIOD_COLUMN)) {
-                jsonData.add(CompanyHouseTable.PERIOD_COLUMN, gson.toJsonTree(valueString));
-            }
-            if (keyString.equals(referenceColumnName)) {
-                jsonData.add(CompanyHouseTable.ID_COLUMN, gson.toJsonTree(valueString));
+
+            String destinationColumnName = mapColumnName.apply(keyString);
+            if (!destinationColumnName.equals("")) {
+                jsonData.add(destinationColumnName, gson.toJsonTree(valueString));
             }
 
-            //All other values to separate JSON object
             jsonVariables.add(keyString, gson.toJsonTree(valueString));
         }
 
