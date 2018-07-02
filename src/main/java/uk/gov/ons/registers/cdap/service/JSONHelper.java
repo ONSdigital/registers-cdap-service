@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import uk.gov.ons.registers.cdap.service.tablecolumns.CompanyHouseTable;
-import uk.gov.ons.registers.cdap.service.tablecolumns.VATTable;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -21,7 +20,7 @@ class JSONHelper {
      *
      * String referenceColumnName is used to set the ID of the JSON object from the rowkey column in dataset being used
      */
-    static JsonElement byteMapToGenericJSON(Map<byte[], byte[]> hashMap, Function<String, String> mapColumnName){
+    static JsonElement byteMapToGenericJSON(Map<byte[], byte[]> hashMap, Function<String, String> mapAndFilterKeys){
 
         Gson gson = new Gson();
         JsonObject jsonData = new JsonObject();
@@ -34,7 +33,7 @@ class JSONHelper {
             String valueString = decodeByteArrToString(entry.getValue());
 
 
-            String destinationColumnName = mapColumnName.apply(keyString);
+            String destinationColumnName = mapAndFilterKeys.apply(keyString);
             if (!destinationColumnName.equals("")) {
                 jsonData.add(destinationColumnName, gson.toJsonTree(valueString));
             }
@@ -49,7 +48,7 @@ class JSONHelper {
         return jsonData;
     }
 
-    static String decodeByteArrToString(byte[] byteInput) {
+    private static String decodeByteArrToString(byte[] byteInput) {
         return new String(byteInput, StandardCharsets.UTF_8);
     }
 }
