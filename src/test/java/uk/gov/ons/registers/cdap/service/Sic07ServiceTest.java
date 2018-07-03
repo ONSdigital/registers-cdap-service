@@ -6,6 +6,7 @@ import co.cask.cdap.test.*;
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
 import org.junit.*;
+import uk.gov.ons.registers.cdap.service.tablecolumns.Sic07Table;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -27,12 +28,12 @@ public class Sic07ServiceTest extends TestBase {
         ApplicationManager appManager = deployApplication(Sic07.class);
 
         // Get the Sic07 dataset
-        DataSetManager<Table> datasetManager = getDataset(Sic07.DATASET_NAME);
+        DataSetManager<Table> datasetManager = getDataset(Sic07Table.DATASET_NAME);
         Table sicCodes = datasetManager.get();
 
         // Add a SIC code and description
         Put put = new Put(TEST_SIC_CODE);
-        put.add(Sic07Service.Sic07Handler.DESC_COLUMN, TEST_SIC_DESC);
+        put.add(Sic07Table.DESC_COLUMN, TEST_SIC_DESC);
         sicCodes.put(put);
 
         // Commit our new row to the dataset

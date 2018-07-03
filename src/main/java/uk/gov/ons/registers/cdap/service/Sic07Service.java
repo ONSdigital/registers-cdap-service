@@ -10,6 +10,7 @@ import co.cask.cdap.api.service.http.HttpServiceRequest;
 import co.cask.cdap.api.service.http.HttpServiceResponder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.ons.registers.cdap.service.tablecolumns.Sic07Table;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -21,7 +22,7 @@ import java.net.HttpURLConnection;
  */
 class Sic07Service extends AbstractService {
 
-    public static final String SERVICE_NAME = "Sic07Service";
+    static final String SERVICE_NAME = "Sic07Service";
     private static final String SERVICE_DESC = "Service that returns descriptions for industry classification codes for SIC07";
 
     @Override
@@ -36,9 +37,9 @@ class Sic07Service extends AbstractService {
      */
     public static class Sic07Handler extends AbstractHttpServiceHandler {
         private static final Logger LOG = LoggerFactory.getLogger(Sic07Handler.class);
-        static final String DESC_COLUMN = "description";
 
-        @UseDataSet(Sic07.DATASET_NAME)
+
+        @UseDataSet(Sic07Table.DATASET_NAME)
         private Table sicCodes;
 
         /**
@@ -56,7 +57,7 @@ class Sic07Service extends AbstractService {
                 responder.sendStatus(HttpURLConnection.HTTP_NOT_FOUND);
                 return;
             }
-            responder.sendString(sic07.getString(DESC_COLUMN));
+            responder.sendString(sic07.getString(Sic07Table.DESC_COLUMN));
         }
     }
 }
