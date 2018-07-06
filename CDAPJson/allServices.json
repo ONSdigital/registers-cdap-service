@@ -1,0 +1,17 @@
+[
+  {
+    "appId": "sic07_lookup",
+    "programType": "Service",
+    "programId": "VATService"
+  },
+  {
+    "appId": "sic07_lookup",
+    "programType": "Service",
+    "programId": "CompanyHouseService"
+  },
+  {
+    "appId": "sic07_lookup",
+    "programType": "Service",
+    "programId": "Sic07Service"
+  }
+]
