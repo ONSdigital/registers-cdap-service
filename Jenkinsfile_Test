@@ -4,38 +4,45 @@ pipeline {
         CDAP_ADDRESS = credentials('cdap-address')
     }
     stages {
-        stage('Build') {
-            steps {
-                sh '"/Applications/apache-maven-3.5.3/bin/mvn" clean compile'
-            }
-        }
-        stage('Unit Test') {
-            steps {
-                sh '"/Applications/apache-maven-3.5.3/bin/mvn" test'
-            }
-        }
-        stage('Package') {
-            steps {
-                sh '"/Applications/apache-maven-3.5.3/bin/mvn" package'
-            }
-        }
+        // stage('Build') {
+        //     steps {
+        //         sh '"/Applications/apache-maven-3.5.3/bin/mvn" clean compile'
+        //     }
+        // }
+        // stage('Unit Test') {
+        //     steps {
+        //         sh '"/Applications/apache-maven-3.5.3/bin/mvn" test'
+        //     }
+        // }
+        // stage('Package') {
+        //     steps {
+        //         sh '"/Applications/apache-maven-3.5.3/bin/mvn" package'
+        //     }
+        // }
         stage('Deploy') {
             steps {
-                //Stop all services then delete Application
-                sh 'curl -X POST --data-binary @CDAPJson/allServices.json $CDAP_ADDRESS/v3/namespaces/default/stop'
-                sh 'curl -X DELETE $CDAP_ADDRESS/v3/namespaces/default/apps/sic07_lookup'
-                //Deploy new Jar to CDAP
-                sh 'curl -X POST --header "X-Archive-Name: registers-cdap-service-0.0.1-SNAPSHOT.jar" --data-binary @target/registers-cdap-service-0.0.1-SNAPSHOT.jar $CDAP_ADDRESS/v3/namespaces/default/apps'
-                //Start all services
-                sh 'curl -X POST --data-binary @CDAPJson/allServices.json $CDAP_ADDRESS/v3/namespaces/default/start'
-                sh 'curl -v $CDAP_ADDRESS/v3/namespaces/default/apps/sic07_lookup/services/CompanyHouseService/methods/CH/bussinesnumber/11240759~2018-06'
+                sh '$username:password@localhost:10009/token -o output.json'
+                def workspace = pwd()
+                def jsonSlurper = new JsonSlurper()
+                def json = jsonSlurper.parseText(new File("${workspace}/output.json").text)
+                echo json.toString()
+                //Get CDAP authentication token
+                // username:password@localhost:10009/token
+                // //Stop all services then delete Application
+                // sh 'curl -X POST --data-binary @CDAPJson/allServices.json $CDAP_ADDRESS/v3/namespaces/default/stop'
+                // sh 'curl -X DELETE $CDAP_ADDRESS/v3/namespaces/default/apps/sic07_lookup'
+                // //Deploy new Jar to CDAP
+                // sh 'curl -X POST --header "X-Archive-Name: registers-cdap-service-0.0.1-SNAPSHOT.jar" --data-binary @target/registers-cdap-service-0.0.1-SNAPSHOT.jar $CDAP_ADDRESS/v3/namespaces/default/apps'
+                // //Start all services
+                // sh 'curl -X POST --data-binary @CDAPJson/allServices.json $CDAP_ADDRESS/v3/namespaces/default/start'
+                // sh 'curl -v $CDAP_ADDRESS/v3/namespaces/default/apps/sic07_lookup/services/CompanyHouseService/methods/CH/bussinesnumber/11240759~2018-06'
                 }
             }
     }
     post {
         always {
             junit '**/target/*-reports/*.xml'
-            //deleteDir()
+            deleteDir()
         }
     }
 }
