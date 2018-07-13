@@ -2,13 +2,13 @@
 import groovy.json.JsonSlurper
 
 def jsonMaker() {
-        stage('Get CDAP Token') {
+        // stage('Get CDAP Token') {
             def response = httpRequest 'http://username:password@localhost:10009/token'
             def jsonResponce = response.content
             def json = new JsonSlurper().parseText(jsonResponce)
             String authHeader = "Authorization: Bearer " + json.access_token
             authHeader
-        }
+        // }
     }
 
 pipeline {
