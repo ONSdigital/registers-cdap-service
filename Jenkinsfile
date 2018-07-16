@@ -19,17 +19,17 @@ pipeline {
         stages {
             stage('Build') {
                 steps {
-                    sh '"/Applications/apache-maven-3.5.3/bin/mvn" clean compile'
+                    sh 'mvn clean compile'
                 }
             }
             stage('Unit Test') {
                 steps {
-                    sh '"/Applications/apache-maven-3.5.3/bin/mvn" test'
+                    sh 'mvn test'
                     }
             }
             stage('Package') {
                 steps {
-                    sh '"/Applications/apache-maven-3.5.3/bin/mvn" package'
+                    sh 'mvn package'
                     }
             }
             stage('Deploy') {
